@@ -103,7 +103,7 @@
     // ** จุดที่ 1: LIFF ID **
     const MY_LIFF_ID = "2011856114-65vmtqaU"; 
 
-    // ** จุดที่ 2: Web App URL (Version 16) **
+    // ** จุดที่ 2: Web App URL **
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZrpSY8vomB2JwzZvXvv1JAeoiUSsQh6VCG1GAwbzC_JvFqlDogeED5GWJbGQQnwVI/exec"; 
 
     async function initializeLiff() {
@@ -131,7 +131,6 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึกข้อมูล...';
 
-      // ปรับชื่อฟิลด์ birthdate ให้ตรงกับใน Code.gs
       const formData = {
         lineUserId: document.getElementById('lineUserId').value,
         phone: document.getElementById('phone').value,
@@ -141,21 +140,28 @@
       };
 
       try {
-        // ส่งแบบ text/plain และ mode: no-cors เพื่อให้ทะลุข้ามโดเมนจาก GitHub ไป Apps Script ได้
-        await fetch(GAS_WEB_APP_URL, {
+        // ใช้ fetch แบบปกติโดยไม่ใส่ no-cors เพื่อให้อ่านผลลัพธ์ (response) ที่ Apps Script ส่งกลับมาได้
+        const response = await fetch(GAS_WEB_APP_URL, {
           method: 'POST',
-          mode: 'no-cors',
           headers: {
             'Content-Type': 'text/plain;charset=utf-8',
           },
           body: JSON.stringify(formData)
         });
 
-        // เมื่อยิงผ่านโดยไม่ติด CORS
-        alert('🎉 สมัครสมาชิกเรียบร้อยแล้วค่ะ!');
-        if (liff.isInClient()) {
-          liff.closeWindow(); // ปิดหน้าต่าง LIFF
+        const result = await response.json();
+
+        if (result.success) {
+          // 🟢 กรณีสำเร็จจริง (สมัครใหม่ หรือ ผูกบัญชีสำเร็จ)
+          alert("🎉 " + result.message);
+          if (liff.isInClient()) {
+            liff.closeWindow(); // ปิดหน้าต่าง LIFF
+          }
+        } else {
+          // 🔴 กรณีไม่สำเร็จ (เช่น เบอร์ซ้ำ) ให้โชว์ข้อความเตือนจาก Apps Script
+          alert("⚠️ " + result.message);
         }
+
       } catch (error) {
         console.error("Error sending data:", error);
         alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
@@ -166,6 +172,6 @@
     });
 
     window.onload = initializeLiff;
-  </script>
+</script>
 </body>
 </html>
