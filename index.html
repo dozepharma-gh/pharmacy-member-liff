@@ -3,175 +3,362 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>สมัครสมาชิกร้านยา</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>สมัครสมาชิก doze.</title>
   <!-- LINE LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Prompt', sans-serif; }
+    :root {
+      --ink: #111214;
+      --ink-2: #3a3d42;
+      --muted: #5c6066;
+      --line: #d5d8dc;
+      --bg: #f4f5f7;
+      --danger: #b42318;
+      --silver: linear-gradient(135deg, #fbfbfc 0%, #d5d8dc 18%, #f2f3f5 36%, #b4b8be 58%, #e6e8eb 78%, #c2c6cb 100%);
+      --silver-bar: linear-gradient(90deg, #c2c6cb 0%, #f2f3f5 30%, #b4b8be 60%, #fbfbfc 85%, #c2c6cb 100%);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); font-family: 'Kanit', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    [hidden] { display: none !important; }
+
+    /* Header */
+    .brand { background: var(--ink); height: 132px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .brand img { width: 150px; height: auto; }
+    .brand small { font-size: 11px; letter-spacing: .3em; color: #b4b8be; }
+    .bar { height: 4px; background: var(--silver-bar); }
+
+    .view { flex: 1; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 16px; }
+    h1 { margin: 0; font-size: 24px; font-weight: 600; line-height: 1.3; }
+    .lead { margin: 4px 0 0; font-size: 15px; font-weight: 300; line-height: 1.55; color: var(--ink-2); }
+
+    /* Consent */
+    .policy { max-height: 260px; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+    .policy b { display: block; font-weight: 600; color: var(--ink); }
+    .policy span { font-weight: 300; }
+    .link { font-size: 14px; font-weight: 500; color: var(--ink); align-self: flex-start; }
+    .check { display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; cursor: pointer; font-size: 14px; line-height: 1.5; }
+    .check input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); flex-shrink: 0; }
+    .check:has(input:checked) { border-color: var(--ink); }
+
+    /* Buttons */
+    .actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
+    .btn { height: 54px; border: none; border-radius: 16px; font-family: inherit; font-size: 17px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; text-decoration: none; width: 100%; }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+    .btn-ghost { height: 44px; background: transparent; color: var(--ink-2); font-size: 15px; font-weight: 400; }
+    .btn-silver { background: var(--silver); color: var(--ink); }
+    .btn-outline { height: 48px; background: transparent; color: #e6e8eb; border: 1.5px solid var(--ink-2); font-size: 16px; font-weight: 400; }
+    .btn:focus-visible { outline: 3px solid #8a8e95; outline-offset: 2px; }
+
+    /* Form */
+    .line-row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: #e6e8eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .line-row small { display: block; font-size: 13px; color: var(--muted); }
+    .line-row strong { font-size: 16px; font-weight: 500; }
+    .perk { display: flex; align-items: center; gap: 14px; border-radius: 16px; padding: 14px 16px; background: var(--silver); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); font-size: 15px; line-height: 1.4; }
+    .perk .ico { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    form { display: flex; flex-direction: column; gap: 14px; margin: 0; flex: 1; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 15px; font-weight: 500; }
+    .field label .req { color: var(--danger); }
+    .field label .opt { font-weight: 300; color: var(--muted); }
+    .field input { height: 50px; border: 1.5px solid var(--line); border-radius: 14px; background: #fff; padding: 0 16px; font-family: inherit; font-size: 16px; color: var(--ink); width: 100%; }
+    .field input::placeholder { color: #8a8e95; }
+    .field input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(17,18,20,.12); }
+    .hint { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); }
+    .error { background: #fef3f2; border: 1px solid #fecdca; color: var(--danger); border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.5; }
+    .fineprint { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.5; }
+    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success */
+    .success { background: var(--ink); color: #fff; min-height: 100vh; padding: 56px 24px 32px; display: flex; flex-direction: column; align-items: center; gap: 28px; }
+    .success .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--silver); display: flex; align-items: center; justify-content: center; }
+    .success h1 { font-size: 26px; text-align: center; }
+    .success .lead { color: #b4b8be; text-align: center; }
+    .card { width: 100%; max-width: 342px; aspect-ratio: 342 / 216; border-radius: 22px; background: var(--silver); box-shadow: 0 20px 44px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.6); padding: 22px 22px 20px; display: flex; flex-direction: column; justify-content: space-between; color: var(--ink); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .card-top img { width: 130px; height: auto; }
+    .card-top small { font-size: 11px; font-weight: 500; letter-spacing: .3em; color: var(--ink-2); }
+    .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+    .card-bottom small { display: block; font-size: 12px; color: var(--ink-2); }
+    .card-bottom .name { font-size: 18px; font-weight: 500; }
+    .card-bottom .pts { font-size: 30px; font-weight: 600; line-height: 1.1; text-align: right; }
+    .success .actions { width: 100%; }
   </style>
 </head>
-<body class="bg-emerald-50 min-h-screen flex items-center justify-center p-4">
+<body>
+<div class="wrap">
 
-  <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
-    <!-- Header -->
-    <div class="bg-emerald-600 p-6 text-center text-white relative">
-      <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-md text-emerald-600 text-3xl">
-        <i class="fa-solid fa-prescription-bottle-medical"></i>
+  <!-- ===== หน้า 1: ขอความยินยอม PDPA ===== -->
+  <section id="viewConsent">
+    <header class="brand"><img src="./logo-white.png" alt="doze pharma"><small>MEMBER</small></header>
+    <div class="bar"></div>
+    <div class="view" style="min-height: calc(100vh - 136px);">
+      <div>
+        <h1>ก่อนสมัครสมาชิก</h1>
+        <p class="lead">ร้านขอเก็บและใช้ข้อมูลของคุณเพื่อระบบสมาชิก กรุณาอ่านสรุปด้านล่างและให้ความยินยอม</p>
       </div>
-      <h1 class="text-2xl font-bold">สมัครสมาชิกร้านยา</h1>
-      <p class="text-emerald-100 text-sm mt-1">รับสิทธิประโยชน์ ส่วนลดสะสมแต้ม และคูปองวันเกิด</p>
+
+      <!-- ✏️ แก้ข้อความในวงเล็บ [ ] ให้เป็นข้อมูลจริงของร้าน -->
+      <div class="policy" tabindex="0" aria-label="สรุปนโยบายความเป็นส่วนตัว">
+        <div><b>ข้อมูลที่เก็บ</b><span>เบอร์โทรศัพท์ ชื่อ-นามสกุล ชื่อเล่น วันเกิด ข้อมูลโปรไฟล์ LINE (ชื่อ รูป และ LINE User ID) ประวัติการซื้อและแต้มสะสม</span></div>
+        <div><b>ใช้เพื่อ</b><span>สมัครและดูแลบัญชีสมาชิก สะสมและแลกแต้ม มอบสิทธิประโยชน์และคูปองวันเกิด และติดต่อคุณเรื่องคำสั่งซื้อ</span></div>
+        <div><b>ระยะเวลาเก็บ</b><span>ตลอดช่วงที่เป็นสมาชิก และลบภายใน [ระยะเวลา] หลังยกเลิกสมาชิก</span></div>
+        <div><b>สิทธิของคุณ</b><span>ขอดู แก้ไข หรือลบข้อมูล และถอนความยินยอมได้ทุกเมื่อ ติดต่อร้านได้ที่ [เบอร์โทร / LINE ร้าน]</span></div>
+        <div><b>ผู้ควบคุมข้อมูล</b><span>ร้านยา doze. pharma (โดส ฟาร์มา) อุตรดิตถ์ [ที่อยู่ร้าน]</span></div>
+      </div>
+      <a id="policyLink" class="link" href="#" target="_blank" rel="noopener" hidden>อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม</a>
+
+      <label class="check">
+        <input type="checkbox" id="consentRequired">
+        <span><b>(จำเป็น)</b> ยินยอมให้ร้านเก็บและใช้ข้อมูลข้างต้น เพื่อการเป็นสมาชิก สะสมแต้ม และรับสิทธิประโยชน์</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="consentMarketing">
+        <span><b>(ไม่บังคับ)</b> ยินยอมรับข่าวสารและโปรโมชันจากร้านทาง LINE</span>
+      </label>
+
+      <div class="actions">
+        <button type="button" id="consentBtn" class="btn btn-primary" disabled>ติ๊กยินยอมข้อแรกเพื่อดำเนินการต่อ</button>
+        <button type="button" id="declineBtn" class="btn btn-ghost">ไม่ยอมรับ</button>
+      </div>
     </div>
+  </section>
 
-    <!-- User Profile Preview (Auto-filled by LIFF) -->
-    <div class="bg-emerald-100/60 px-6 py-3 flex items-center gap-3 border-b border-emerald-100">
-      <img id="userPicture" src="https://via.placeholder.com/40" alt="Profile" class="w-10 h-10 rounded-full border border-emerald-300">
+  <!-- ===== หน้า 2: ฟอร์มสมัคร ===== -->
+  <section id="viewForm" hidden>
+    <header class="brand"><img src="./logo-white.png" alt="doze pharma"><small>MEMBER</small></header>
+    <div class="bar"></div>
+    <div class="view" style="min-height: calc(100vh - 136px);">
       <div>
-        <p class="text-xs text-emerald-800">เชื่อมต่อกับ LINE:</p>
-        <p id="userName" class="text-sm font-semibold text-emerald-950">กำลังโหลดข้อมูล LINE...</p>
+        <h1>สมัครสมาชิก</h1>
+        <p class="lead">สะสมแต้ม แลกส่วนลด และรับคูปองวันเกิด</p>
+      </div>
+
+      <div class="line-row">
+        <div class="avatar" id="avatarBox">
+          <svg id="avatarFallback" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5c6066" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+          <img id="userPicture" alt="" hidden>
+        </div>
+        <div>
+          <small>เชื่อมต่อกับ LINE</small>
+          <strong id="userName">กำลังโหลดข้อมูล LINE...</strong>
+        </div>
+      </div>
+
+      <div class="perk">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f2f3f5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9"/><path d="M12 8v13"/><path d="M12 8c-1.5-3.5-5.5-4-5.5-1.5S10 8 12 8z"/><path d="M12 8c1.5-3.5 5.5-4 5.5-1.5S14 8 12 8z"/></svg></div>
+        <div>สมัครวันนี้ รับ <b>100 แต้มต้อนรับ</b> ทันที</div>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <input type="hidden" id="lineUserId" name="lineUserId">
+
+        <div class="field">
+          <label for="phone">เบอร์โทรศัพท์ <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="10" placeholder="08XXXXXXXX" required>
+        </div>
+        <div class="field">
+          <label for="fullName">ชื่อ-นามสกุล <span class="req">*</span></label>
+          <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="สมชาย ใจดี" required>
+        </div>
+        <div class="field">
+          <label for="nickname">ชื่อเล่น <span class="opt">(ไม่บังคับ)</span></label>
+          <input type="text" id="nickname" name="nickname" placeholder="ชาย">
+        </div>
+        <div class="field">
+          <label for="dob">วันเกิด <span class="opt">(ไม่บังคับ)</span></label>
+          <input type="date" id="dob" name="dob">
+          <div class="hint"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3a3d42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9"/><path d="M12 8v13"/></svg>กรอกวันเกิดเพื่อรับคูปองส่วนลดในเดือนเกิด</div>
+        </div>
+
+        <div id="formError" class="error" role="alert" hidden></div>
+
+        <div class="actions">
+          <button type="submit" id="submitBtn" class="btn btn-primary">ยืนยันการสมัครสมาชิก
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <p class="fineprint">คุณให้ความยินยอมตามนโยบายความเป็นส่วนตัวแล้ว</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== หน้า 3: สมัครสำเร็จ ===== -->
+  <section id="viewSuccess" class="success" hidden>
+    <div class="tick"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#111214" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <div>
+      <h1>สมัครสมาชิกสำเร็จ</h1>
+      <p class="lead" id="successMsg">ยินดีต้อนรับสู่ครอบครัว doze.</p>
+    </div>
+    <div class="card">
+      <div class="card-top"><img src="./logo-black.png" alt="doze pharma"><small>MEMBER</small></div>
+      <div class="card-bottom">
+        <div><small>ชื่อสมาชิก</small><div class="name" id="cardName"></div></div>
+        <div id="cardPointsBox" hidden><small style="text-align:right">แต้มสะสม</small><div class="pts" id="cardPoints"></div></div>
       </div>
     </div>
+    <div class="actions">
+      <a id="memberCardLink" class="btn btn-silver" href="#" hidden>ดูบัตรสมาชิก</a>
+      <button type="button" id="closeBtn" class="btn btn-outline">กลับไปที่แชท</button>
+    </div>
+  </section>
 
-    <!-- Form -->
-    <form id="registerForm" class="p-6 space-y-4">
-      <!-- Hidden Input for LINE User ID -->
-      <input type="hidden" id="lineUserId" name="lineUserId">
-
-      <!-- Phone -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-            <i class="fa-solid fa-phone"></i>
-          </div>
-          <input type="tel" id="phone" name="phone" required placeholder="08X-XXX-XXXX" pattern="[0-9]{9,10}"
-            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-800">
-        </div>
-      </div>
-
-      <!-- Full Name -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ - นามสกุล <span class="text-red-500">*</span></label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-            <i class="fa-solid fa-user"></i>
-          </div>
-          <input type="text" id="fullName" name="fullName" required placeholder="นายสมชาย ใจดี"
-            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-800">
-        </div>
-      </div>
-
-      <!-- Nickname -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อเล่น <span class="text-xs text-gray-400">(ไม่บังคับ)</span></label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-            <i class="fa-solid fa-smile"></i>
-          </div>
-          <input type="text" id="nickname" name="nickname" placeholder="ชาย"
-            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-800">
-        </div>
-      </div>
-
-      <!-- Date of Birth -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">วัน/เดือน/ปีเกิด <span class="text-xs text-gray-400">(ไม่บังคับ)</span></label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-            <i class="fa-solid fa-cake-candles"></i>
-          </div>
-          <input type="date" id="dob" name="dob"
-            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-800">
-        </div>
-        <p class="text-xs text-emerald-600 mt-1"><i class="fa-solid fa-gift mr-1"></i>ระบุเพื่อรับคูปองส่วนลดพิเศษในเดือนเกิด</p>
-      </div>
-
-      <!-- Submit Button -->
-      <button type="submit" id="submitBtn"
-        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2 mt-6">
-        <span>ยืนยันการสมัครสมาชิก</span>
-        <i class="fa-solid fa-arrow-right"></i>
-      </button>
-    </form>
-  </div>
+</div>
 
 <script>
-    // ** จุดที่ 1: LIFF ID **
-    const MY_LIFF_ID = "2011856114-65vmtqaU"; 
+  // ** จุดที่ 1: LIFF ID (เดิม) **
+  const MY_LIFF_ID = "2011856114-65vmtqaU";
 
-    // ** จุดที่ 2: Web App URL **
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZrpSY8vomB2JwzZvXvv1JAeoiUSsQh6VCG1GAwbzC_JvFqlDogeED5GWJbGQQnwVI/exec"; 
+  // ** จุดที่ 2: Web App URL ของ Apps Script (เดิม) **
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZrpSY8vomB2JwzZvXvv1JAeoiUSsQh6VCG1GAwbzC_JvFqlDogeED5GWJbGQQnwVI/exec";
 
-    async function initializeLiff() {
-      try {
-        await liff.init({ liffId: MY_LIFF_ID });
-        if (liff.isLoggedIn()) {
-          const profile = await liff.getProfile();
-          document.getElementById('lineUserId').value = profile.userId;
-          document.getElementById('userName').textContent = profile.displayName;
-          if (profile.pictureUrl) {
-            document.getElementById('userPicture').src = profile.pictureUrl;
-          }
-        } else {
-          liff.login();
-        }
-      } catch (err) {
-        console.error("LIFF Initialization failed", err);
-        document.getElementById('userName').textContent = "เปิดทดสอบในเบราว์เซอร์";
-      }
+  // ** จุดที่ 3 (ใหม่): ลิงก์นโยบายฉบับเต็ม — เว้นว่างไว้ = ซ่อนลิงก์ **
+  const POLICY_URL = "";
+
+  // ** จุดที่ 4 (ใหม่): ลิงก์หน้าบัตรสมาชิก (LIFF ของ member-card) — เว้นว่างไว้ = ซ่อนปุ่ม **
+  const MEMBER_CARD_URL = "";
+
+  // เวอร์ชันข้อความยินยอม — เปลี่ยนทุกครั้งที่แก้ข้อความ PDPA
+  const CONSENT_VERSION = "2026-11";
+
+  const $ = (id) => document.getElementById(id);
+  let consent = null;
+
+  function show(viewId) {
+    ["viewConsent", "viewForm", "viewSuccess"].forEach(v => $(v).hidden = (v !== viewId));
+    window.scrollTo(0, 0);
+  }
+
+  function closeLiff() {
+    if (window.liff && liff.isInClient && liff.isInClient()) liff.closeWindow();
+  }
+
+  // ---------- หน้า 1: ความยินยอม ----------
+  if (POLICY_URL) { $("policyLink").href = POLICY_URL; $("policyLink").hidden = false; }
+
+  $("consentRequired").addEventListener("change", (e) => {
+    const ok = e.target.checked;
+    $("consentBtn").disabled = !ok;
+    $("consentBtn").textContent = ok ? "ยอมรับและดำเนินการต่อ" : "ติ๊กยินยอมข้อแรกเพื่อดำเนินการต่อ";
+  });
+
+  $("consentBtn").addEventListener("click", () => {
+    consent = {
+      consentAt: new Date().toISOString(),
+      consentVersion: CONSENT_VERSION,
+      marketingConsent: $("consentMarketing").checked
+    };
+    show("viewForm");
+  });
+
+  $("declineBtn").addEventListener("click", () => {
+    if (window.liff && liff.isInClient && liff.isInClient()) {
+      liff.closeWindow();
+    } else {
+      alert("หากไม่ยินยอม จะไม่สามารถสมัครสมาชิกได้");
     }
+  });
 
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึกข้อมูล...';
-
-      const formData = {
-        lineUserId: document.getElementById('lineUserId').value,
-        phone: document.getElementById('phone').value,
-        fullName: document.getElementById('fullName').value,
-        nickname: document.getElementById('nickname').value,
-        birthdate: document.getElementById('dob').value
-      };
-
-      try {
-        // ใช้ fetch แบบปกติโดยไม่ใส่ no-cors เพื่อให้อ่านผลลัพธ์ (response) ที่ Apps Script ส่งกลับมาได้
-        const response = await fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(formData)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          // 🟢 กรณีสำเร็จจริง (สมัครใหม่ หรือ ผูกบัญชีสำเร็จ)
-          alert("🎉 " + result.message);
-          if (liff.isInClient()) {
-            liff.closeWindow(); // ปิดหน้าต่าง LIFF
-          }
-        } else {
-          // 🔴 กรณีไม่สำเร็จ (เช่น เบอร์ซ้ำ) ให้โชว์ข้อความเตือนจาก Apps Script
-          alert("⚠️ " + result.message);
+  // ---------- LIFF ----------
+  async function initializeLiff() {
+    try {
+      await liff.init({ liffId: MY_LIFF_ID });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        $("lineUserId").value = profile.userId;
+        $("userName").textContent = profile.displayName;
+        if (profile.pictureUrl) {
+          $("userPicture").src = profile.pictureUrl;
+          $("userPicture").hidden = false;
+          $("avatarFallback").style.display = "none";
         }
-
-      } catch (error) {
-        console.error("Error sending data:", error);
-        alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>ยืนยันการสมัครสมาชิก</span><i class="fa-solid fa-arrow-right"></i>';
+      } else {
+        liff.login();
       }
-    });
+    } catch (err) {
+      console.error("LIFF Initialization failed", err);
+      $("userName").textContent = "เปิดทดสอบในเบราว์เซอร์";
+    }
+  }
 
-    window.onload = initializeLiff;
+  // ---------- หน้า 2: ส่งฟอร์ม ----------
+  function showError(msg) {
+    $("formError").textContent = msg;
+    $("formError").hidden = false;
+    $("formError").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  $("phone").addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+  });
+
+  const SUBMIT_HTML = $("submitBtn").innerHTML;
+
+  $("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("formError").hidden = true;
+
+    const phone = $("phone").value.trim();
+    const fullName = $("fullName").value.trim();
+
+    if (!consent) { show("viewConsent"); return; }
+    if (!/^0\d{8,9}$/.test(phone)) { showError("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (ขึ้นต้นด้วย 0 และมี 9–10 หลัก)"); $("phone").focus(); return; }
+    if (!fullName) { showError("กรุณากรอกชื่อ-นามสกุล"); $("fullName").focus(); return; }
+
+    const btn = $("submitBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> กำลังบันทึกข้อมูล...';
+
+    const formData = {
+      lineUserId: $("lineUserId").value,
+      phone: phone,
+      fullName: fullName,
+      nickname: $("nickname").value.trim(),
+      birthdate: $("dob").value,
+      // ข้อมูลความยินยอม (ใหม่) — Apps Script ต้องอัปเดตให้บันทึกด้วย
+      consentAt: consent.consentAt,
+      consentVersion: consent.consentVersion,
+      marketingConsent: consent.marketingConsent
+    };
+
+    try {
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(formData)
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        $("successMsg").textContent = result.message || "ยินดีต้อนรับสู่ครอบครัว doze.";
+        $("cardName").textContent = fullName;
+        if (result.points !== undefined && result.points !== null) {
+          $("cardPoints").textContent = Number(result.points).toLocaleString("th-TH");
+          $("cardPointsBox").hidden = false;
+        }
+        if (MEMBER_CARD_URL) { $("memberCardLink").href = MEMBER_CARD_URL; $("memberCardLink").hidden = false; }
+        show("viewSuccess");
+      } else {
+        showError(result.message || "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่");
+      }
+    } catch (error) {
+      console.error("Error sending data:", error);
+      showError("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = SUBMIT_HTML;
+    }
+  });
+
+  $("closeBtn").addEventListener("click", closeLiff);
+
+  window.addEventListener("load", initializeLiff);
 </script>
 </body>
 </html>
