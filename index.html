@@ -3,15 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- ป้องกันการเก็บ Cache บน LINE App Browser -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
-  <title>บัตรสมาชิก doze.</title>
+  <title>สมัครสมาชิก doze.</title>
+  <!-- LINE LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -30,327 +24,361 @@
     .wrap { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
     [hidden] { display: none !important; }
 
-    .brand { background: var(--ink); height: 112px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-    .brand img { width: 130px; height: auto; }
+    /* Header */
+    .brand { background: var(--ink); height: 132px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .brand img { width: 150px; height: auto; }
     .brand small { font-size: 11px; letter-spacing: .3em; color: #b4b8be; }
     .bar { height: 4px; background: var(--silver-bar); }
-    .content { flex: 1; padding: 20px 20px 28px; display: flex; flex-direction: column; gap: 16px; }
 
-    /* Loading / error */
-    .state { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 28px 20px; text-align: center; font-size: 15px; color: var(--ink-2); }
-    .spinner { width: 36px; height: 36px; margin: 0 auto 12px; border: 3px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: spin .8s linear infinite; }
+    .view { flex: 1; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 16px; }
+    h1 { margin: 0; font-size: 24px; font-weight: 600; line-height: 1.3; }
+    .lead { margin: 4px 0 0; font-size: 15px; font-weight: 300; line-height: 1.55; color: var(--ink-2); }
+
+    /* Consent */
+    .policy { max-height: 260px; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+    .policy b { display: block; font-weight: 600; color: var(--ink); }
+    .policy span { font-weight: 300; }
+    .link { font-size: 14px; font-weight: 500; color: var(--ink); align-self: flex-start; }
+    .check { display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; cursor: pointer; font-size: 14px; line-height: 1.5; }
+    .check input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); flex-shrink: 0; }
+    .check:has(input:checked) { border-color: var(--ink); }
+
+    /* Buttons */
+    .actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
+    .btn { height: 54px; border: none; border-radius: 16px; font-family: inherit; font-size: 17px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; text-decoration: none; width: 100%; }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+    .btn-ghost { height: 44px; background: transparent; color: var(--ink-2); font-size: 15px; font-weight: 400; }
+    .btn-silver { background: var(--silver); color: var(--ink); }
+    .btn-outline { height: 48px; background: transparent; color: #e6e8eb; border: 1.5px solid var(--ink-2); font-size: 16px; font-weight: 400; }
+    .btn:focus-visible { outline: 3px solid #8a8e95; outline-offset: 2px; }
+
+    /* Form */
+    .line-row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: #e6e8eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .line-row small { display: block; font-size: 13px; color: var(--muted); }
+    .line-row strong { font-size: 16px; font-weight: 500; }
+    .perk { display: flex; align-items: center; gap: 14px; border-radius: 16px; padding: 14px 16px; background: var(--silver); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6); font-size: 15px; line-height: 1.4; }
+    .perk .ico { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    form { display: flex; flex-direction: column; gap: 14px; margin: 0; flex: 1; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 15px; font-weight: 500; }
+    .field label .req { color: var(--danger); }
+    .field label .opt { font-weight: 300; color: var(--muted); }
+    .field input { height: 50px; border: 1.5px solid var(--line); border-radius: 14px; background: #fff; padding: 0 16px; font-family: inherit; font-size: 16px; color: var(--ink); width: 100%; }
+    .field input::placeholder { color: #8a8e95; }
+    .field input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(17,18,20,.12); }
+    .hint { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); }
+    .error { background: #fef3f2; border: 1px solid #fecdca; color: var(--danger); border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.5; }
+    .fineprint { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.5; }
+    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .state.error { background: #fef3f2; border-color: #fecdca; color: var(--danger); }
 
-    /* Card */
-    .card { border-radius: 22px; background: var(--silver); box-shadow: 0 16px 36px rgba(17,18,20,.22), inset 0 0 0 1px rgba(255,255,255,.6); padding: 22px; display: flex; flex-direction: column; gap: 22px; color: var(--ink); }
-    .card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .card-top img { width: 120px; height: auto; }
-    .tier { color: var(--ink-2); font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; white-space: nowrap; }
-    .label { font-size: 12px; color: var(--ink-2); }
-    .name { font-size: 20px; font-weight: 600; line-height: 1.3; margin-top: 2px; word-break: break-word; }
-    .phone { font-size: 13px; color: var(--ink-2); letter-spacing: .04em; margin-top: 2px; }
+    /* Success */
+    .success { background: var(--ink); color: #fff; min-height: 100vh; padding: 56px 24px 32px; display: flex; flex-direction: column; align-items: center; gap: 28px; }
+    .success .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--silver); display: flex; align-items: center; justify-content: center; }
+    .success h1 { font-size: 26px; text-align: center; }
+    .success .lead { color: #b4b8be; text-align: center; }
+    .card { width: 100%; max-width: 342px; aspect-ratio: 342 / 216; border-radius: 22px; background: var(--silver); box-shadow: 0 20px 44px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.6); padding: 22px 22px 20px; display: flex; flex-direction: column; justify-content: space-between; color: var(--ink); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .card-top img { width: 130px; height: auto; }
+    .card-top small { font-size: 11px; font-weight: 500; letter-spacing: .3em; color: var(--ink-2); }
     .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
-    .card-bottom .small-caps { font-size: 11px; font-weight: 500; letter-spacing: .3em; color: var(--ink-2); }
-    .points { font-size: 36px; font-weight: 600; line-height: 1.05; text-align: right; }
-
-    .card { position: relative; overflow: hidden; }
-    .card > *:not(.sheen) { position: relative; }
-    .sheen { display: none; }
-
-    /* ===== Exclusive Black Card (ระดับ 2 ขึ้นไป) — quiet luxury: ดำด้าน เรียบ ขอบเงินบาง ===== */
-    .card.vip {
-      --foil: linear-gradient(100deg, #e9eaec 0%, #9a9ea5 30%, #f7f7f8 50%, #8e9298 72%, #d5d8dc 100%);
-      border: 1px solid transparent;
-      background:
-        repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 1px, transparent 1px 4px) padding-box,
-        radial-gradient(130% 100% at 100% 0%, rgba(255,255,255,.07), transparent 55%) padding-box,
-        linear-gradient(160deg, #19191c 0%, #0c0c0d 55%, #121214 100%) padding-box,
-        linear-gradient(135deg, #8a8e95 0%, #3a3d42 35%, #b4b8be 55%, #3a3d42 80%, #6e7278 100%) border-box;
-      color: #ececee;
-      box-shadow: 0 28px 56px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.35);
-    }
-    .card.vip .label, .card.vip .phone { color: #7d8187; }
-    .card.vip .name { color: #ececee; font-weight: 500; letter-spacing: .02em; }
-    .card.vip .card-top img { width: 100px; opacity: .92; }
-    .card.vip .tier, .card.vip .small-caps, .card.vip .points {
-      background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
-    .card.vip .tier { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-align: right; white-space: pre-line; line-height: 1.8; }
-    .card.vip .small-caps { font-size: 10px; letter-spacing: .36em; }
-    .card.vip .points { font-weight: 400; letter-spacing: .01em; }
-    .card.vip .sheen {
-      display: block; position: absolute; top: -60%; bottom: -60%; left: -80%; width: 50%;
-      background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,.06) 50%, transparent 100%);
-      transform: skewX(-12deg); animation: sweep 9s ease-in-out infinite; pointer-events: none;
-    }
-    @keyframes sweep { 0%, 60% { left: -80%; } 100% { left: 140%; } }
-    @media (prefers-reduced-motion: reduce) { .card.vip .sheen { animation: none; display: none; } }
-
-    /* QR */
-    .qr { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    #qrcode img, #qrcode canvas { display: block; }
-    .qr p { margin: 0; font-size: 13px; color: var(--ink-2); text-align: center; }
-
-    .btn { height: 52px; width: 100%; border-radius: 16px; font-family: inherit; font-size: 16px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; background: #fff; color: var(--ink); border: 1.5px solid var(--ink); }
-    .btn:focus-visible, .icon-btn:focus-visible { outline: 3px solid #8a8e95; outline-offset: 2px; }
-
-    /* History sheet */
-    .overlay { position: fixed; inset: 0; background: rgba(17,18,20,.55); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
-    .sheet { background: #fff; width: 100%; max-width: 480px; max-height: 80vh; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; }
-    .sheet-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid #e6e8eb; }
-    .sheet-head h3 { margin: 0; font-size: 17px; font-weight: 600; }
-    .icon-btn { width: 40px; height: 40px; border: none; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .list { padding: 14px 16px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
-    .item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg); }
-    .item .desc { font-weight: 500; }
-    .item .date { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .item .amt { font-weight: 600; font-size: 15px; text-align: right; white-space: nowrap; }
-    .item .amt.add { color: var(--ink); }
-    .item .amt.use { color: var(--danger); }
-    .item .unit { font-size: 11px; color: var(--muted); text-align: right; }
-    .empty { text-align: center; color: var(--muted); padding: 24px 0; }
+    .card-bottom small { display: block; font-size: 12px; color: var(--ink-2); }
+    .card-bottom .name { font-size: 18px; font-weight: 500; }
+    .card-bottom .pts { font-size: 30px; font-weight: 600; line-height: 1.1; text-align: right; }
+    .success .actions { width: 100%; }
   </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="brand"><img src="./logo-white.png" alt="doze pharma"><small>MEMBER</small></header>
-  <div class="bar"></div>
 
-  <main class="content">
-    <!-- ระหว่างรอโหลดข้อมูล -->
-    <div id="loading" class="state">
-      <div class="spinner" aria-hidden="true"></div>
-      กำลังเปิดบัตรสมาชิก...
+  <!-- ===== หน้า 1: ขอความยินยอม PDPA ===== -->
+  <section id="viewConsent">
+    <header class="brand"><img src="./logo-white.png" alt="doze pharma"><small>MEMBER</small></header>
+    <div class="bar"></div>
+    <div class="view" style="min-height: calc(100vh - 136px);">
+      <div>
+        <h1>ก่อนสมัครสมาชิก</h1>
+        <p class="lead">ร้านขอเก็บและใช้ข้อมูลของคุณเพื่อระบบสมาชิก กรุณาอ่านสรุปด้านล่างและให้ความยินยอม</p>
+      </div>
+
+      <!-- ✏️ แก้ข้อความในวงเล็บ [ ] ให้เป็นข้อมูลจริงของร้าน -->
+      <div class="policy" tabindex="0" aria-label="สรุปนโยบายความเป็นส่วนตัว">
+        <div><b>ข้อมูลที่เก็บ</b><span>เบอร์โทรศัพท์ ชื่อ-นามสกุล ชื่อเล่น วันเกิด ข้อมูลโปรไฟล์ LINE (ชื่อ รูป และ LINE User ID) ประวัติการซื้อและแต้มสะสม</span></div>
+        <div><b>ใช้เพื่อ</b><span>สมัครและดูแลบัญชีสมาชิก สะสมและแลกแต้ม มอบสิทธิประโยชน์และคูปองวันเกิด และติดต่อคุณเรื่องคำสั่งซื้อ</span></div>
+        <div><b>ระยะเวลาเก็บ</b><span>ตลอดช่วงที่เป็นสมาชิก และลบภายใน 1 ปี หลังยกเลิกสมาชิก</span></div>
+        <div><b>สิทธิของคุณ</b><span>ขอดู แก้ไข หรือลบข้อมูล และถอนความยินยอมได้ทุกเมื่อ ติดต่อร้านได้ที่โทร 090-9542459</span></div>
+        <div><b>ผู้ควบคุมข้อมูล</b><span>ร้านยา โดส ฟาร์มา DOZE PHARMA<br>54 ถนนบรมอาสน์ ตำบลท่าอิฐ อำเภอเมือง จังหวัดอุตรดิตถ์ 53000<br>โทร 090-9542459</span></div>
+      </div>
+      <a id="policyLink" class="link" href="#" target="_blank" rel="noopener" hidden>อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม</a>
+
+      <label class="check">
+        <input type="checkbox" id="consentRequired">
+        <span><b>(จำเป็น)</b> ยินยอมให้ร้านเก็บและใช้ข้อมูลข้างต้น เพื่อการเป็นสมาชิก สะสมแต้ม และรับสิทธิประโยชน์</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="consentMarketing">
+        <span><b>(ไม่บังคับ)</b> ยินยอมรับข่าวสารและโปรโมชันจากร้านทาง LINE</span>
+      </label>
+
+      <div class="actions">
+        <button type="button" id="consentBtn" class="btn btn-primary" disabled>ยอมรับข้อแรกเพื่อดำเนินการต่อ</button>
+        <button type="button" id="declineBtn" class="btn btn-ghost">ไม่ยอมรับ</button>
+      </div>
     </div>
+  </section>
 
-    <!-- Error -->
-    <div id="error" class="state error" role="alert" hidden><p id="error-msg" style="margin:0">เกิดข้อผิดพลาดในการดึงข้อมูล</p></div>
+  <!-- ===== หน้า 2: ฟอร์มสมัคร ===== -->
+  <section id="viewForm" hidden>
+    <header class="brand"><img src="./logo-white.png" alt="doze pharma"><small>MEMBER</small></header>
+    <div class="bar"></div>
+    <div class="view" style="min-height: calc(100vh - 136px);">
+      <div>
+        <h1>สมัครสมาชิก</h1>
+        <p class="lead">สะสมแต้ม แลกส่วนลด และรับคูปองวันเกิด</p>
+      </div>
 
-    <!-- บัตรสมาชิก -->
-    <div id="cardWrap" hidden style="display:flex; flex-direction:column; gap:16px;">
-      <div id="card" class="card">
-        <div class="sheen" aria-hidden="true"></div>
-        <div class="card-top">
-          <img id="cardLogo" src="./logo-black.png" alt="doze pharma">
-          <span id="tier" class="tier">Platinum Card</span>
+      <div class="line-row">
+        <div class="avatar" id="avatarBox">
+          <svg id="avatarFallback" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5c6066" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+          <img id="userPicture" alt="" hidden>
         </div>
         <div>
-          <div class="label">ชื่อสมาชิก</div>
-          <div id="name" class="name">กำลังโหลด...</div>
-          <div id="phone" class="phone">-</div>
-        </div>
-        <div class="card-bottom">
-          <div class="small-caps">MEMBER</div>
-          <div>
-            <div class="label" style="text-align:right">คะแนนสะสมคงเหลือ</div>
-            <div id="points" class="points">0</div>
-          </div>
+          <small>เชื่อมต่อกับ LINE</small>
+          <strong id="userName">กำลังโหลดข้อมูล LINE...</strong>
         </div>
       </div>
 
-      <div class="qr">
-        <div id="qrcode"></div>
-        <p>ยื่น QR Code นี้ให้พนักงานเพื่อสะสมคะแนน</p>
+      <div class="perk">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f2f3f5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9"/><path d="M12 8v13"/><path d="M12 8c-1.5-3.5-5.5-4-5.5-1.5S10 8 12 8z"/><path d="M12 8c1.5-3.5 5.5-4 5.5-1.5S14 8 12 8z"/></svg></div>
+        <div>สมัครวันนี้ รับ <b>100 แต้มต้อนรับ</b> ทันที</div>
       </div>
 
-      <button type="button" class="btn" onclick="toggleHistoryModal()">
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111214" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
-        ประวัติการได้รับและการใช้แต้ม
-      </button>
-    </div>
-  </main>
-</div>
+      <form id="registerForm" novalidate>
+        <input type="hidden" id="lineUserId" name="lineUserId">
 
-<!-- ประวัติรายการ -->
-<div id="historyModal" class="overlay" hidden onclick="if(event.target===this) toggleHistoryModal()">
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="histTitle">
-    <div class="sheet-head">
-      <h3 id="histTitle">ประวัติกิจกรรมแต้ม</h3>
-      <button type="button" class="icon-btn" aria-label="ปิด" onclick="toggleHistoryModal()">
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3a3d42" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
+        <div class="field">
+          <label for="phone">เบอร์โทรศัพท์ <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="10" placeholder="08XXXXXXXX" required>
+        </div>
+        <div class="field">
+          <label for="fullName">ชื่อ-นามสกุล <span class="req">*</span></label>
+          <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="สมชาย ใจดี" required>
+        </div>
+        <div class="field">
+          <label for="nickname">ชื่อเล่น <span class="opt">(ไม่บังคับ)</span></label>
+          <input type="text" id="nickname" name="nickname" placeholder="ชาย">
+        </div>
+        <div class="field">
+          <label for="dob">วันเกิด <span class="opt">(ไม่บังคับ)</span></label>
+          <input type="date" id="dob" name="dob">
+          <div class="hint"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3a3d42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9"/><path d="M12 8v13"/></svg>กรอกวันเกิดเพื่อรับคูปองส่วนลดในเดือนเกิด</div>
+        </div>
+
+        <div id="formError" class="error" role="alert" hidden></div>
+
+        <div class="actions">
+          <button type="submit" id="submitBtn" class="btn btn-primary">ยืนยันการสมัครสมาชิก
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <p class="fineprint">คุณให้ความยินยอมตามนโยบายความเป็นส่วนตัวแล้ว</p>
+        </div>
+      </form>
     </div>
-    <div id="historyList" class="list"><p class="empty">กำลังโหลดประวัติ...</p></div>
-  </div>
+  </section>
+
+  <!-- ===== หน้า 3: สมัครสำเร็จ ===== -->
+  <section id="viewSuccess" class="success" hidden>
+    <div class="tick"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#111214" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <div>
+      <h1>สมัครสมาชิกสำเร็จ</h1>
+      <p class="lead" id="successMsg">ยินดีต้อนรับสู่ครอบครัว doze.</p>
+    </div>
+    <div class="card">
+      <div class="card-top"><img src="./logo-black.png" alt="doze pharma"><small>MEMBER</small></div>
+      <div class="card-bottom">
+        <div><small>ชื่อสมาชิก</small><div class="name" id="cardName"></div></div>
+        <div id="cardPointsBox" hidden><small style="text-align:right">แต้มสะสม</small><div class="pts" id="cardPoints"></div></div>
+      </div>
+    </div>
+    <div class="actions">
+      <a id="memberCardLink" class="btn btn-silver" href="#" hidden>ดูบัตรสมาชิก</a>
+      <button type="button" id="closeBtn" class="btn btn-outline">กลับไปที่แชท</button>
+    </div>
+  </section>
+
 </div>
 
 <script>
-  const MY_LIFF_ID = "2011856114-wFeurW8T";
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZrpSY8vomB2JwzZvXvv1JAeoiUSsQh6VCG1GAwbzC_JvFqlDogeED5GWJbGQQnwVI/exec";
+  // ** จุดที่ 1: LIFF ID (เดิม) **
+  const MY_LIFF_ID = "2011856114-65vmtqaU";
 
-  let currentUserId = "";
-  let isRendered = false;
+  // ** จุดที่ 2: Web App URL ของ Apps Script (เดิม) **
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZrpSY8vomB2JwzZvXvv1JAeoiUSsQh6VCG1GAwbzC_JvFqlDogeED5GWJbGQQnwVI/exec";
+
+  // ** จุดที่ 3 (ใหม่): ลิงก์นโยบายฉบับเต็ม — เว้นว่างไว้ = ซ่อนลิงก์ **
+  const POLICY_URL = "";
+
+  // ** จุดที่ 4 (ใหม่): ลิงก์หน้าบัตรสมาชิก (LIFF ของ member-card) — เว้นว่างไว้ = ซ่อนปุ่ม **
+  const MEMBER_CARD_URL = "https://liff.line.me/2011856114-wFeurW8T";
+
+  // เวอร์ชันข้อความยินยอม — เปลี่ยนทุกครั้งที่แก้ข้อความ PDPA
+  const CONSENT_VERSION = "2026-11";
 
   const $ = (id) => document.getElementById(id);
-  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let consent = null;
 
-  window.onload = function () {
-    liff.init({ liffId: MY_LIFF_ID })
-      .then(() => {
-        if (!liff.isLoggedIn()) {
-          liff.login();
-        } else {
-          liff.getProfile().then(profile => {
-            currentUserId = profile.userId;
-            loadFromCache(currentUserId);
-            fetchMemberData(currentUserId);
-          }).catch(err => showError("ไม่สามารถดึงโปรไฟล์ LINE ได้: " + err));
-        }
-      })
-      .catch(err => showError("เกิดข้อผิดพลาดในการเริ่มต้น LIFF: " + err));
-  };
+  function show(viewId) {
+    ["viewConsent", "viewForm", "viewSuccess"].forEach(v => $(v).hidden = (v !== viewId));
+    window.scrollTo(0, 0);
+  }
 
-  function loadFromCache(userId) {
+  function closeLiff() {
+    if (window.liff && liff.isInClient && liff.isInClient()) liff.closeWindow();
+  }
+
+  // ---------- หน้า 1: ความยินยอม ----------
+  if (POLICY_URL) { $("policyLink").href = POLICY_URL; $("policyLink").hidden = false; }
+
+  $("consentRequired").addEventListener("change", (e) => {
+    const ok = e.target.checked;
+    $("consentBtn").disabled = !ok;
+    $("consentBtn").textContent = ok ? "ยอมรับและดำเนินการต่อ" : "ยอมรับข้อแรกเพื่อดำเนินการต่อ";
+  });
+
+  $("consentBtn").addEventListener("click", () => {
+    consent = {
+      consentAt: new Date().toISOString(),
+      consentVersion: CONSENT_VERSION,
+      marketingConsent: $("consentMarketing").checked
+    };
+    show("viewForm");
+  });
+
+  $("declineBtn").addEventListener("click", () => {
+    if (window.liff && liff.isInClient && liff.isInClient()) {
+      liff.closeWindow();
+    } else {
+      alert("หากไม่ยินยอม จะไม่สามารถสมัครสมาชิกได้");
+    }
+  });
+
+  // ---------- LIFF ----------
+  async function initializeLiff() {
     try {
-      const cachedCard = localStorage.getItem('member_card_' + userId);
-      if (cachedCard) renderCard(JSON.parse(cachedCard));
-    } catch (e) {
-      console.error("Cache load error:", e);
+      await liff.init({ liffId: MY_LIFF_ID });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        $("lineUserId").value = profile.userId;
+        $("userName").textContent = profile.displayName;
+        if (profile.pictureUrl) {
+          $("userPicture").src = profile.pictureUrl;
+          $("userPicture").hidden = false;
+          $("avatarFallback").style.display = "none";
+        }
+      } else {
+        liff.login();
+      }
+    } catch (err) {
+      console.error("LIFF Initialization failed", err);
+      $("userName").textContent = "เปิดทดสอบในเบราว์เซอร์";
     }
   }
 
-  function fetchMemberData(lineUserId) {
-    fetch(`${APPS_SCRIPT_URL}?action=getMemberData&lineUserId=${encodeURIComponent(lineUserId)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          try { localStorage.setItem('member_card_' + lineUserId, JSON.stringify(data)); } catch (e) {}
-          renderCard(data);
-          if (data.introduced === false) introduceInChat(lineUserId, data.displayName || data.fullName);
-        } else if (!isRendered) {
-          showError(data.message || "ไม่พบข้อมูลสมาชิกในระบบ");
-        }
-      })
-      .catch(() => {
-        if (!isRendered) showError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-      });
+  // ---------- หน้า 2: ส่งฟอร์ม ----------
+  function showError(msg) {
+    $("formError").textContent = msg;
+    $("formError").hidden = false;
+    $("formError").scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  // ส่งข้อความแนะนำตัวเข้าแชทร้าน 1 ครั้ง (ในนามลูกค้า) เพื่อให้แอดมินรู้ว่าแชทนี้คือสมาชิกคนไหน
-  // ต้องเปิด scope chat_message.write ให้ LIFF นี้ และต้องเปิดจากแชทของร้าน (rich menu) — ถ้าส่งไม่ได้จะข้ามไปเงียบ ๆ
-  let introSent = false;
-  async function introduceInChat(lineUserId, name) {
-    if (introSent || !name) return;
-    introSent = true;
+  $("phone").addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+  });
+
+  const SUBMIT_HTML = $("submitBtn").innerHTML;
+
+  $("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("formError").hidden = true;
+
+    const phone = $("phone").value.trim();
+    const fullName = $("fullName").value.trim();
+
+    if (!consent) { show("viewConsent"); return; }
+    if (!/^0\d{8,9}$/.test(phone)) { showError("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (ขึ้นต้นด้วย 0 และมี 9–10 หลัก)"); $("phone").focus(); return; }
+    if (!fullName) { showError("กรุณากรอกชื่อ-นามสกุล"); $("fullName").focus(); return; }
+
+    const btn = $("submitBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> กำลังบันทึกข้อมูล...';
+
+    const formData = {
+      lineUserId: $("lineUserId").value,
+      phone: phone,
+      fullName: fullName,
+      nickname: $("nickname").value.trim(),
+      birthdate: $("dob").value,
+      // ข้อมูลความยินยอม (ใหม่) — Apps Script ต้องอัปเดตให้บันทึกด้วย
+      consentAt: consent.consentAt,
+      consentVersion: consent.consentVersion,
+      marketingConsent: consent.marketingConsent
+    };
+
     try {
-      if (!liff.isInClient()) return;
-      await liff.sendMessages([{ type: "text", text: "🔖 สมาชิก doze.\n" + name }]);
-      fetch(`${APPS_SCRIPT_URL}?action=markIntroduced&lineUserId=${encodeURIComponent(lineUserId)}`).catch(() => {});
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(formData)
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        notifyShopChat(fullName, formData.nickname, phone);
+        $("successMsg").textContent = result.message || "ยินดีต้อนรับสู่ครอบครัว doze.";
+        $("cardName").textContent = fullName;
+        if (result.points !== undefined && result.points !== null) {
+          $("cardPoints").textContent = Number(result.points).toLocaleString("th-TH");
+          $("cardPointsBox").hidden = false;
+        }
+        if (MEMBER_CARD_URL) { $("memberCardLink").href = MEMBER_CARD_URL; $("memberCardLink").hidden = false; }
+        show("viewSuccess");
+      } else {
+        showError(result.message || "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่");
+      }
+    } catch (error) {
+      console.error("Error sending data:", error);
+      showError("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = SUBMIT_HTML;
+    }
+  });
+
+  // ---------- ส่งข้อความยืนยันเข้าแชทร้าน (ในนามลูกค้า) ----------
+  // ให้แอดมินเห็นในแชท LINE OA ว่าแชทนี้คือสมาชิกคนไหน ชื่อตรงกับคอลัมน์ F "ชื่อ [ชื่อเล่น]" ในชีต
+  // ต้องเปิด scope "chat_message.write" ให้ LIFF นี้ใน LINE Developers และต้องเปิดจากแชทของร้าน (เช่น rich menu)
+  // ถ้าส่งไม่ได้ จะข้ามไปเงียบ ๆ ไม่กระทบการสมัคร
+  async function notifyShopChat(fullName, nickname, phone) {
+    try {
+      if (!window.liff || !liff.isInClient || !liff.isInClient()) return;
+      const nick = (nickname || "").trim();
+      const display = fullName.trim() + (nick && nick !== "-" ? " [" + nick + "]" : "");
+      const tel = phone.length === 10 ? phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3") : phone;
+      await liff.sendMessages([{ type: "text", text: "✅ สมัครสมาชิก doze. เรียบร้อย\n" + display + "\nโทร " + tel }]);
+      // บันทึกในชีต (คอลัมน์ N) ว่าแนะนำตัวในแชทแล้ว — หน้าบัตรจะได้ไม่ส่งซ้ำ
+      const uid = $("lineUserId").value;
+      if (uid) fetch(GAS_WEB_APP_URL + "?action=markIntroduced&lineUserId=" + encodeURIComponent(uid)).catch(() => {});
     } catch (err) {
       console.warn("sendMessages skipped:", err);
     }
   }
 
-  function renderCard(data) {
-    if (!data) return;
-    isRendered = true;
+  $("closeBtn").addEventListener("click", closeLiff);
 
-    $('loading').hidden = true;
-    $('error').hidden = true;
-
-    // ในชีตยังเก็บเป็น "ระดับ 1" / "ระดับ 2" เหมือนเดิม — แปลงเป็นชื่อบัตรตอนแสดงผลเท่านั้น
-    // ระดับ 1 → Platinum Card | ระดับ 2 ขึ้นไป หรือ VIP → Exclusive Black Card
-    const tier = String(data.tier || "ระดับ 1");
-    const tierNum = parseInt(tier.replace(/\D/g, ""), 10);
-    const isVip = /vip|black/i.test(tier) || (!isNaN(tierNum) && tierNum >= 2);
-
-    $('name').innerText = data.fullName || "สมาชิก";
-    $('phone').innerText = data.phone || "";
-    $('points').innerText = Number(data.points || 0).toLocaleString();
-    $('tier').textContent = isVip ? "Exclusive\nBlack Card" : "Platinum Card";
-    $('card').classList.toggle('vip', isVip);
-    $('cardLogo').src = isVip ? './logo-white.png' : './logo-black.png';
-
-    if (data.phone) {
-      const qrcodeContainer = $("qrcode");
-      qrcodeContainer.innerHTML = "";
-      try {
-        new QRCode(qrcodeContainer, {
-          text: String(data.phone),
-          width: 160,
-          height: 160,
-          colorDark: "#111214",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      } catch (e) {
-        console.error("QR Code Error:", e);
-      }
-    }
-
-    $('cardWrap').hidden = false;
-  }
-
-  // เปิด-ปิด หน้าต่างประวัติ
-  function toggleHistoryModal() {
-    const modal = $('historyModal');
-    if (modal.hidden) {
-      modal.hidden = false;
-      loadHistoryData();
-    } else {
-      modal.hidden = true;
-    }
-  }
-
-  // ดึงประวัติจาก Apps Script
-  function loadHistoryData() {
-    const historyList = $('historyList');
-
-    let cachedHist = null;
-    try { cachedHist = localStorage.getItem('member_history_' + currentUserId); } catch (e) {}
-    if (cachedHist) {
-      try { renderHistoryUI(JSON.parse(cachedHist)); } catch (e) {}
-    } else {
-      historyList.innerHTML = `<p class="empty">กำลังโหลดประวัติ...</p>`;
-    }
-
-    if (currentUserId) {
-      fetch(`${APPS_SCRIPT_URL}?action=getHistory&lineUserId=${encodeURIComponent(currentUserId)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success && data.history) {
-            try { localStorage.setItem('member_history_' + currentUserId, JSON.stringify(data.history)); } catch (e) {}
-            renderHistoryUI(data.history);
-          } else if (!cachedHist) {
-            historyList.innerHTML = `<p class="empty">ยังไม่มีประวัติการทำรายการ</p>`;
-          }
-        })
-        .catch(() => {
-          if (!cachedHist) historyList.innerHTML = `<p class="empty" style="color:#b42318">ไม่สามารถโหลดประวัติได้</p>`;
-        });
-    }
-  }
-
-  // วาดรายการประวัติ
-  function renderHistoryUI(historyItems) {
-    const historyList = $('historyList');
-    if (historyItems && historyItems.length > 0) {
-      historyList.innerHTML = historyItems.map(item => {
-        const isAdd = item.type === 'ADD';
-        const desc = item.description || (isAdd ? 'ได้รับแต้มสะสม' : 'แลกของรางวัล/ส่วนลด');
-        return `
-          <div class="item">
-            <div>
-              <div class="desc">${esc(desc)}</div>
-              <div class="date">${esc(item.date)}</div>
-            </div>
-            <div>
-              <div class="amt ${isAdd ? 'add' : 'use'}">${isAdd ? '+' : '−'}${Number(item.points).toLocaleString()}</div>
-              <div class="unit">คะแนน</div>
-            </div>
-          </div>`;
-      }).join('');
-    } else {
-      historyList.innerHTML = `<p class="empty">ยังไม่มีประวัติการทำรายการ</p>`;
-    }
-  }
-
-  function showError(msg) {
-    $('loading').hidden = true;
-    $('error-msg').innerText = msg;
-    $('error').hidden = false;
-  }
+  window.addEventListener("load", initializeLiff);
 </script>
 </body>
 </html>
