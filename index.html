@@ -108,6 +108,7 @@
       <div class="policy" tabindex="0" aria-label="สรุปนโยบายความเป็นส่วนตัว">
         <div><b>ข้อมูลที่เก็บ</b><span>เบอร์โทรศัพท์ ชื่อ-นามสกุล ชื่อเล่น วันเกิด ข้อมูลโปรไฟล์ LINE (ชื่อ รูป และ LINE User ID) ประวัติการซื้อและแต้มสะสม</span></div>
         <div><b>ใช้เพื่อ</b><span>สมัครและดูแลบัญชีสมาชิก สะสมและแลกแต้ม มอบสิทธิประโยชน์และคูปองวันเกิด และติดต่อคุณเรื่องคำสั่งซื้อ</span></div>
+        <div><b>ข้อมูลสุขภาพ</b><span>อาการ ยาที่ได้รับ และผลการติดตามอาการ เพื่อให้เภสัชกรติดต่อสอบถามอาการและผลการใช้ยาของคุณ เข้าถึงได้เฉพาะเภสัชกรและพนักงานของร้านเท่านั้น ไม่เปิดเผยหรือส่งต่อให้บุคคลอื่น</span></div>
         <div><b>ระยะเวลาเก็บ</b><span>ตลอดช่วงที่เป็นสมาชิก และลบภายใน 1 ปี หลังยกเลิกสมาชิก</span></div>
         <div><b>สิทธิของคุณ</b><span>ขอดู แก้ไข หรือลบข้อมูล และถอนความยินยอมได้ทุกเมื่อ ติดต่อร้านได้ที่โทร 090-9542459</span></div>
         <div><b>ผู้ควบคุมข้อมูล</b><span>ร้านยา โดส ฟาร์มา DOZE PHARMA<br>54 ถนนบรมอาสน์ ตำบลท่าอิฐ อำเภอเมือง จังหวัดอุตรดิตถ์ 53000<br>โทร 090-9542459</span></div>
@@ -116,7 +117,7 @@
 
       <label class="check">
         <input type="checkbox" id="consentRequired">
-        <span><b>(จำเป็น)</b> ยินยอมให้ร้านเก็บและใช้ข้อมูลข้างต้น เพื่อการเป็นสมาชิก สะสมแต้ม และรับสิทธิประโยชน์</span>
+        <span><b>(จำเป็น)</b> ยินยอมให้ร้านเก็บและใช้ข้อมูลข้างต้น รวมถึงข้อมูลสุขภาพ (อาการและยาที่ได้รับ) เพื่อการเป็นสมาชิก สะสมแต้ม รับสิทธิประโยชน์ และให้เภสัชกรติดต่อติดตามอาการและผลการใช้ยา</span>
       </label>
       <label class="check">
         <input type="checkbox" id="consentMarketing">
@@ -225,7 +226,7 @@
   const MEMBER_CARD_URL = "https://liff.line.me/2011856114-wFeurW8T";
 
   // เวอร์ชันข้อความยินยอม — เปลี่ยนทุกครั้งที่แก้ข้อความ PDPA
-  const CONSENT_VERSION = "2026-11";
+  const CONSENT_VERSION = "v2-2026-11";
 
   const $ = (id) => document.getElementById(id);
   let consent = null;
@@ -252,7 +253,8 @@
     consent = {
       consentAt: new Date().toISOString(),
       consentVersion: CONSENT_VERSION,
-      marketingConsent: $("consentMarketing").checked
+      marketingConsent: $("consentMarketing").checked,
+      healthConsent: true   // ข้อมูลสุขภาพรวมอยู่ในความยินยอมข้อจำเป็น
     };
     show("viewForm");
   });
@@ -324,7 +326,8 @@
       // ข้อมูลความยินยอม (ใหม่) — Apps Script ต้องอัปเดตให้บันทึกด้วย
       consentAt: consent.consentAt,
       consentVersion: consent.consentVersion,
-      marketingConsent: consent.marketingConsent
+      marketingConsent: consent.marketingConsent,
+      healthConsent: consent.healthConsent
     };
 
     try {
